@@ -36,7 +36,7 @@ export default {
   components: { Header },
   data() {
     return {
-      user: 'Amarjith v',
+      user: '',
       orders: []
     }
   },
@@ -46,6 +46,7 @@ export default {
   methods: {
     async getOrders() {
       const user = JSON.parse(localStorage.getItem('userInfo'))
+      this.user = user.data.user.name
       const config = {
         headers: { Authorization: `Bearer ${user.data.token}` }
       };
