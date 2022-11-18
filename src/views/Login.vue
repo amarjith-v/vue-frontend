@@ -22,6 +22,15 @@
         </v-card>
       </v-flex>
     </v-container>
+    <v-snackbar v-model="snackbar" :timeout="timeout" tile>
+      {{ text }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn color="blue" text v-bind="attrs" @click="snackbar = false">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 <script>
@@ -41,6 +50,8 @@ export default {
         v => !!v || 'Password is required',
         v => v.length >= 8 || 'Password must be greater than 8 characters',
       ],
+      text:'',
+      snackbar: false
     }
   },
   methods: {
@@ -55,12 +66,12 @@ export default {
         }).catch(err => {
           if (err.response) {
             if (err.response.status == 403) {
-              // TODO with toast
-              console.log("username or password is incorrect")
+              this.snackbar = true
+              this.text = 'username or password is incorrect';
             }
           } else {
-            // TODO with toast
-            console.log("server error")
+            this.snackbar = true
+            this.text = 'server error';
           }
         })
       }

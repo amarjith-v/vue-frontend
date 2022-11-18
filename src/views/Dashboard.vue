@@ -4,7 +4,13 @@
     <v-container v-if="!createOrderTable" class="mt-4">
       <div class="d-flex justify-space-between">
         <h3>ORDERS</h3>
-        <v-btn v-if="userInfo.data.user.role_id == 1" elevation="2" @click="createOrderTable = true" class="mr-3" fab>
+        <v-btn
+          v-if="userInfo.data.user.role_id == 1"
+          elevation="2"
+          @click="createOrderTable = true"
+          class="mr-3"
+          fab
+        >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </div>
@@ -15,21 +21,29 @@
               <v-col>
                 <v-card-text>
                   <v-chip :color="color(order.status)">{{
-                      order.status
+                    order.status
                   }}</v-chip>
                 </v-card-text>
               </v-col>
-              <v-col class="mt-4 d-flex justify-end" v-if="userInfo.data.user.role_id == 2">
-                <div class="d-flex justify-end mb-2 mr-2">
-                  <v-btn small @click="selectOrder(order.id)">
+              <v-col
+                class="mt-4 d-flex justify-end"
+                v-if="userInfo.data.user.role_id == 2"
+              >
+                <div class="d-flex justify-end mb-2 mr-2" v-if="order.status !== 'delivered'">
+                  <v-btn small @click="selectOrder(order.id, order.status)">
                     {{ getAction(order.status) }}
                   </v-btn>
                 </div>
               </v-col>
+              <v-col
+                class="mt-4 d-flex justify-end"
+                v-if="userInfo.data.user.role_id == 1"
+              >
+                <div class="d-flex justify-end mb-2 mr-2" v-if="order.name">
+                  Order {{ order.status }} by {{ order.name }}
+                </div>
+              </v-col>
             </v-row>
-            <v-list-item-title class="font-weight-medium mb-1" v-if="order.name">
-              Order {{ order.status }} by {{ order.name }}
-            </v-list-item-title>
             <v-list-item three-line>
               <v-list-item-content>
                 <p class="font-weight-bold text-uppercase mb-4">
@@ -62,13 +76,29 @@
         </v-btn>
       </div>
       <v-form ref="form" v-model="valid" lazy-validation>
-        <v-text-field v-model="form.item_name" :counter="10" :rules="itemRules" label="Item Name" required>
+        <v-text-field
+          v-model="form.item_name"
+          :counter="10"
+          :rules="itemRules"
+          label="Item Name"
+          required
+        >
         </v-text-field>
 
-        <v-text-field v-model="form.pickup_address" :rules="pickup_addressRules" label="Pickup Address" required>
+        <v-text-field
+          v-model="form.pickup_address"
+          :rules="pickup_addressRules"
+          label="Pickup Address"
+          required
+        >
         </v-text-field>
 
-        <v-text-field v-model="form.delivery_address" :rules="delivery_addressRules" label="Delivery Address" required>
+        <v-text-field
+          v-model="form.delivery_address"
+          :rules="delivery_addressRules"
+          label="Delivery Address"
+          required
+        >
         </v-text-field>
 
         <v-btn color="success" class="mr-4" @click="onSubmit"> Create </v-btn>
@@ -148,10 +178,10 @@ export default {
         })
         .catch((err) => {
           if (err.response) {
-            console.log(err.response);
+            console.error(err.response);
           } else {
-            // TODO with toast
-            console.log("server error");
+            this.snackbar = true
+            this.text = 'server error';
           }
         });
     },
@@ -168,10 +198,10 @@ export default {
         })
         .catch((err) => {
           if (err.response) {
-            console.log(err.response);
+            console.error(err.response);
           } else {
-            // TODO with toast
-            console.log("server error");
+            this.snackbar = true
+            this.text = 'server error';
           }
         });
     },
@@ -188,15 +218,45 @@ export default {
     },
     getAction(status) {
       if (status == "pending") {
-        return "Select";
+        return "mark as selected";
       } else if (status == "selected") {
-        return "pick";
+        return "mark as picked";
       } else if (status == "picked") {
-        return "pick";
+        return "mark as delivered";
       }
     },
-    async selectOrder(){
-      
+    async selectOrder(id,stat) {
+      var status = "";
+      if (stat == "pending") {
+        status = "selected";
+      } else if (stat == "selected") {
+        status = "picked";
+      } else if (stat == "picked") {
+        status = "delivered";
+      }
+      const form = {
+        id,
+        status,
+      };
+      const config = {
+        headers: { Authorization: `Bearer ${this.userInfo.data.token}` },
+      };
+      const url = "http://127.0.0.1:8000/api/order/update-status";
+      await this.$http
+        .post(url, form, config)
+        .then((res) => {
+          this.text = res.data.message;
+          this.snackbar = true;
+          this.getOrderList();
+        })
+        .catch((err) => {
+          if (err.response) {
+            console.error(err.response);
+          } else {
+            this.snackbar = true
+            this.text = 'server error';
+          }
+        });
     },
     async onSubmit() {
       if (this.$refs.form.validate() == false) {
@@ -217,10 +277,10 @@ export default {
           })
           .catch((err) => {
             if (err.response) {
-              console.log(err.response);
+              console.error(err.response);
             } else {
-              // TODO with toast
-              console.log("server error");
+              this.snackbar = true
+            this.text = 'server error';
             }
           });
       }
@@ -229,5 +289,4 @@ export default {
 };
 </script>
 <style scoped>
-
 </style>
