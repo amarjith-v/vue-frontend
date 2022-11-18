@@ -9,13 +9,29 @@ const routes = [
   {
     path: '/',
     name: 'LoginPage',
-    component: Login
+    component: Login,
+    beforeEnter: (to, from, next) => {
+      if (localStorage.getItem('userInfo')) {
+        next(false);
+        router.push("/dashboard");
+      } else {
+        next();
+      }
+    }
   },
   {
     path: '/dashboard',
     name: 'DashboardPage',
-    component: Dashboard
-  }
+    component: Dashboard,
+    beforeEnter: (to, from, next) => {
+      if (!localStorage.getItem('userInfo')) {
+        next(false);
+        router.push("/");
+      } else {
+        next();
+      }
+    }
+  },
 ]
 
 const router = new VueRouter({
@@ -23,5 +39,6 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
 
 export default router

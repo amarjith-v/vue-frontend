@@ -1,37 +1,30 @@
 <template>
   <div>
-    <v-app id="inspire">
-      <v-main>
-        <v-container fluid fill-height>
-          <v-layout align-center justify-center>
-            <v-flex xs12 sm8 md4>
-              <v-card class="elevation-12">
-                <v-toolbar dark color="primary">
-                  <v-toolbar-title>Login</v-toolbar-title>
-                </v-toolbar>
-                <v-card-text>
-                  <v-form ref="form">
-                    <v-text-field name="login" label="Username" :rules="emailRules" v-model="loginform.email"
-                      type="text"></v-text-field>
-                    <v-text-field id="password" name="password" :rules="passRules" v-model="loginform.password"
-                      label="Password" type="password">
-                    </v-text-field>
-                    <v-card-actions>
-                      <v-spacer></v-spacer>
-                      <v-btn color="primary" @click="submit" to="/">Login</v-btn>
-                    </v-card-actions>
-                  </v-form>
-                </v-card-text>
-              </v-card>
-            </v-flex>
-          </v-layout>
-        </v-container>
-      </v-main>
-    </v-app>
+    <v-container fluid class="d-flex justify-center align-center">
+      <v-flex xs12 sm8 md3>
+        <v-card class="elevation-12">
+          <v-toolbar dark color="primary">
+            <v-toolbar-title>Login</v-toolbar-title>
+          </v-toolbar>
+          <v-card-text>
+            <v-form ref="form">
+              <v-text-field name="login" label="Username" :rules="emailRules" v-model="loginform.email" type="text">
+              </v-text-field>
+              <v-text-field id="password" name="password" :rules="passRules" v-model="loginform.password"
+                label="Password" type="password">
+              </v-text-field>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" @click="submit" to="/">Login</v-btn>
+              </v-card-actions>
+            </v-form>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-container>
   </div>
 </template>
 <script>
-
 export default {
   name: 'LoginPage',
   data() {
@@ -75,3 +68,8 @@ export default {
   }
 }
 </script>
+<style scoped>
+.container {
+  height: 100vh;
+}
+</style>
